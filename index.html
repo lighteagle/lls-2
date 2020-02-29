@@ -1,0 +1,108 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="initial-scale=1,maximum-scale=1,user-scalable=no"
+    />
+    <!--
+  ArcGIS API for JavaScript, https://js.arcgis.com
+  For more information about the intro-mapview sample, read the original sample description at developers.arcgis.com.
+  https://developers.arcgis.com/javascript/latest/sample-code/intro-mapview/index.html
+  -->
+    <title>Soal No.2</title>
+    <style>
+      html,
+      body,
+      #viewDiv {
+        padding: 0;
+        margin: 0;
+        height: 100%;
+        width: 100%;
+      }
+      #layerToggle {
+        top: 20px;
+        right: 20px;
+        position: absolute;
+        z-index: 99;
+        background-color: white;
+        border-radius: 8px;
+        padding: 10px;
+        opacity: 0.75;
+      }
+    </style>
+
+    <link
+      rel="stylesheet"
+      href="https://js.arcgis.com/4.14/esri/themes/light/main.css"
+    />
+    <script src="https://js.arcgis.com/4.14/"></script>
+
+    <script>
+      require([
+        "esri/Map",
+        "esri/views/MapView",
+        "esri/layers/FeatureLayer",
+        "esri/widgets/Search",
+        "esri/widgets/BasemapToggle",
+        "esri/widgets/Compass"
+      ], function(Map, MapView, FeatureLayer, Search, BasemapToggle, Compass) {
+        var map = new Map({
+          basemap: "streets-navigation-vector"
+        });
+        var restaurantsLayer = new FeatureLayer({
+          url:
+            "https://services.arcgis.com/V6ZHFr6zdgNZuVG0/ArcGIS/rest/services/Restaurant/FeatureServer/0"
+        });
+        var treesLayer = new FeatureLayer({
+          url:
+            "https://services.arcgis.com/V6ZHFr6zdgNZuVG0/ArcGIS/rest/services/Trees/FeatureServer/0"
+        });
+
+        var view = new MapView({
+          container: "viewDiv",
+          map: map,
+          zoom: 15,
+          center: [13.335, 52.52] //Restaurant Berlin
+        });
+        map.add(restaurantsLayer);
+        map.add(treesLayer);
+
+        // let search = new Search({
+        //   view: view
+        // });
+        var compass = new Compass({
+          view: view
+        });
+        var toggle = new BasemapToggle({
+          view: view,
+          nextBasemap: "hybrid"
+        });
+
+        // view.ui.add(search, "top-right");
+        view.ui.add([compass, toggle], "top-leading");
+
+        var restaurantsLayerToggle = document.getElementById("restaurants");
+        restaurantsLayerToggle.addEventListener("change", function() {
+          restaurantsLayerToggle.onclick = view.goTo(
+            restaurantsLayer.fullExtent
+          );
+          restaurantsLayer.visible = restaurantsLayerToggle.checked;
+        });
+        var treesLayerToggle = document.getElementById("trees");
+        treesLayerToggle.addEventListener("change", function() {
+          treesLayerToggle.onclick = view.goTo(treesLayer.fullExtent);
+          treesLayer.visible = treesLayerToggle.checked;
+        });
+      });
+    </script>
+  </head>
+
+  <body>
+    <div id="viewDiv"></div>
+    <span id="layerToggle" class="esri-widget">
+      <label> <input type="checkbox" id="restaurants" /> Restaurant </label>
+      <label> <input type="checkbox" id="trees" /> Trees</label>
+    </span>
+  </body>
+</html>
